@@ -1,0 +1,13 @@
+# Игнориране на папката node_modules
+node_modules/
+
+# Игнориране на временни файлове
+*.log
+
+# Игнориране на конфигурации и кеш файлове на IDE (например VS Code)
+.vscode/
+.idea/
+
+# Игнориране на файлове на macOS и Windows
+.DS_Store
+Thumbs.db
