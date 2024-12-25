@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const requestsController = require('../controllers/requestsController');
+const requestController = require('../controllers/requestController');
 
-// Създаване на заявка
-router.post('/', requestsController.createRequest);
-
-// Извличане на заявки с филтри
-router.get('/', requestsController.getRequests);
+router.post('/', requestController.createRequest);
+router.get('/', requestController.getAllRequests);
+router.put('/:id', requestController.updateRequest);
+router.delete('/:id', requestController.deleteRequest);
 
 module.exports = router;
+

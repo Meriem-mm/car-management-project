@@ -1,52 +1,44 @@
-const Request = require('../models/Request');
-const Service = require('../models/Service');
+const Request = require('../models/requestModel');
 
-// Създаване на заявка за поддръжка
+// Create a new maintenance request
 exports.createRequest = async (req, res) => {
     try {
-        const { car, service, date } = req.body;
-
-        // Проверка за налични свободни места в сервиза
-        const serviceObj = await Service.findById(service);
-        if (!serviceObj) {
-            return res.status(404).send({ message: 'Service not found' });
-        }
-
-        const existingRequest = await Request.findOne({ service, date });
-        if (existingRequest) {
-            return res.status(400).send({ message: 'No free slots available for this date' });
-        }
-
-        const request = new Request({ car, service, date });
+        const request = new Request(req.body);
         await request.save();
-        res.status(200).send(request);
+        res.status(201).json(request);
     } catch (error) {
-        res.status(400).send({ message: 'Invalid data' });
+        res.status(400).json({ message: error.message });
     }
 };
 
-// Получаване на заявки с филтри
-exports.getRequests = async (req, res) => {
-    const { carId, serviceId, startDate, endDate } = req.query;
-
-    const filters = {};
-
-    if (carId) {
-        filters.car = carId;
-    }
-
-    if (serviceId) {
-        filters.service = serviceId;
-    }
-
-    if (startDate && endDate) {
-        filters.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
-    }
-
+// Get all requests
+exports.getAllRequests = async (req, res) => {
     try {
-        const requests = await Request.find(filters);
-        res.status(200).send(requests);
+        const requests = await Request.find();
+        res.status(200).json(requests);
     } catch (error) {
-        res.status(500).send({ message: 'Failed to fetch requests' });
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Update a request
+exports.updateRequest = async (req, res) => {
+    try {
+        const request = await Request.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!request) return res.status(404).json({ message: "Request not found" });
+        res.status(200).json(request);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Delete a request
+exports.deleteRequest = async (req, res) => {
+    try {
+        const request = await Request.findByIdAndDelete(req.params.id);
+        if (!request) return res.status(404).json({ message: "Request not found" });
+        res.status(200).json({ message: "Request deleted" });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };
