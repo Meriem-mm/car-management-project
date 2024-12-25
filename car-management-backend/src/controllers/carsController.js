@@ -1,67 +1,44 @@
+const Car = require('../models/carModel');
 
-const Car = require('../models/Car');
-
-// Създаване на автомобил
+// Create a new car
 exports.createCar = async (req, res) => {
     try {
-        const { model, year, services } = req.body;
-        const car = new Car({ model, year, services });
+        const car = new Car(req.body);
         await car.save();
-        res.status(200).send(car);
+        res.status(201).json(car);
     } catch (error) {
-        res.status(400).send({ message: 'Invalid data' });
+        res.status(400).json({ message: error.message });
     }
 };
 
-// Актуализиране на автомобил
+// Get all cars
+exports.getAllCars = async (req, res) => {
+    try {
+        const cars = await Car.find();
+        res.status(200).json(cars);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Update a car
 exports.updateCar = async (req, res) => {
     try {
         const car = await Car.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!car) {
-            return res.status(404).send({ message: 'Car not found' });
-        }
-        res.status(200).send(car);
+        if (!car) return res.status(404).json({ message: "Car not found" });
+        res.status(200).json(car);
     } catch (error) {
-        res.status(400).send({ message: 'Invalid data' });
+        res.status(400).json({ message: error.message });
     }
 };
 
-// Изтриване на автомобил
+// Delete a car
 exports.deleteCar = async (req, res) => {
     try {
         const car = await Car.findByIdAndDelete(req.params.id);
-        if (!car) {
-            return res.status(404).send({ message: 'Car not found' });
-        }
-        res.status(200).send({ message: 'Car deleted' });
+        if (!car) return res.status(404).json({ message: "Car not found" });
+        res.status(200).json({ message: "Car deleted" });
     } catch (error) {
-        res.status(400).send({ message: 'Invalid data' });
-    }
-};
-
-// Получаване на всички автомобили с филтри
-exports.getAllCars = async (req, res) => {
-    const { brand, serviceId, yearRange } = req.query;
-
-    const filters = {};
-
-    if (brand) {
-        filters.model = new RegExp(brand, 'i');
-    }
-
-    if (serviceId) {
-        filters.services = serviceId;
-    }
-
-    if (yearRange) {
-        const [startYear, endYear] = yearRange.split('-').map(Number);
-        filters.year = { $gte: startYear, $lte: endYear };
-    }
-
-    try {
-        const cars = await Car.find(filters);
-        res.status(200).send(cars);
-    } catch (error) {
-        res.status(500).send({ message: 'Failed to fetch cars' });
+        res.status(400).json({ message: error.message });
     }
 };

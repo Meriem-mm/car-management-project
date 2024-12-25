@@ -1,17 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const carsController = require('../controllers/carsController');
+const carController = require('../controllers/carController');
 
-// Създаване на автомобил
-router.post('/', carsController.createCar);
-
-// Актуализиране на автомобил
-router.put('/:id', carsController.updateCar);
-
-// Изтриване на автомобил
-router.delete('/:id', carsController.deleteCar);
-
-// Извличане на всички автомобили
-router.get('/', carsController.getAllCars);
+router.post('/', carController.createCar);
+router.get('/', carController.getAllCars);
+router.put('/:id', carController.updateCar);
+router.delete('/:id', carController.deleteCar);
 
 module.exports = router;
+
